@@ -1,0 +1,125 @@
+body{
+    margin: 0%;
+    padding: 0%;
+    font-family: Roboto;
+}
+ul, li{
+    margin: 0%;
+    padding: 0%;
+}
+header{
+    text-align: center;
+    background: #dbdbdb;
+    padding: 20px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace !important;
+}
+
+.puzzleContainer{
+    height: 408px;
+    width:408px;
+    margin: auto;
+    background: url(./images/img1.jpg);
+    background-size: contain;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+.puzzlePiece{
+    flex: 1;
+    height: 134px;
+    transition-duration: 0.5s;
+    min-width: 134px;
+    font-size: 200%;
+    text-align: center;
+    color: white;
+    position: absolute;
+    border-radius: 8px;
+    border: solid black 1px;
+    background: url(./images/img1.jpg) no-repeat;
+    background-size: calc( 135*3px );
+    z-index: 1;
+}
+.differ{
+    position: absolute;
+    height: 100%;
+    width:100%;
+    background: rgba(250, 250, 250, 0.6);
+}
+.puzzlePiece:nth-of-type(1){
+    background-position: 0px 0px;
+}
+
+.puzzlePiece:nth-of-type(2){
+    background-position: -134px 0px;
+}
+.puzzlePiece:nth-of-type(3){
+    background-position: -270px 0px;
+}
+.puzzlePiece:nth-of-type(4){
+    background-position: 0px -135px;
+}
+.puzzlePiece:nth-of-type(5){
+    background-position: -135px -135px;
+}
+.puzzlePiece:nth-of-type(6){
+    background-position: -270px -135px;
+}
+.puzzlePiece:nth-of-type(7){
+    background-position: 0px -270px;
+}
+.puzzlePiece:nth-of-type(8){
+    background-position:  -135px -270px;
+}
+.puzzlePiece:nth-of-type(9){
+    background-position: -270px -270px;
+}
+.controls{
+    margin: auto;
+    height: 100px;
+    width: 408px;
+}
+
+label, button,input{
+    cursor: pointer;
+}
+input{
+    background: #2020cb !important;
+}
+button,input{
+    margin-top: 15px;
+    height: 40px;
+    width: 49%;
+    display: inline-block;
+    background: #09c848;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    box-shadow: 0px 0px 5px ;
+}
+.selectImage{
+    position: absolute;
+    height: 100%;
+    width: 250px;
+    text-align: center;
+}
+img{
+    margin: 10px auto;
+    display: inline-block;
+    height: 150px;
+    width: 150px;
+    cursor: pointer;
+}
+.info{
+    position: absolute;
+    right:50px;
+    top: 0;
+    width:250px;
+    height: 100%;
+    text-align: center;
+}
+.score{
+    margin-top: 50px;
+}
