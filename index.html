@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="./index.css">
+    <script src="./Grid.js"></script>
+    <script src="./priority.js"></script>
+    <title>Sliding Tiles Puzzle</title>
+</head>
+
+<body>
+
+    <header>
+        <div>Sliding Tiles Puzzle</div>
+    </header>
+
+    <div style="position: relative;">
+        <div class="selectImage">
+            <div>Select Image</div>
+            <div style="max-height:100%;">
+                <img src="./images/img1.jpg" onclick="changeImage(this)">
+                <img src="./images/img2.jpg" onclick="changeImage(this)">
+            </div>
+        </div>
+        <div class="puzzleContainer">
+            <div class="puzzlePiece">1</div>
+            <div class="puzzlePiece">2</div>
+            <div class="puzzlePiece">3</div>
+            <div class="puzzlePiece">4</div>
+            <div class="puzzlePiece">5</div>
+            <div class="puzzlePiece">6</div>
+            <div class="puzzlePiece">7</div>
+            <div class="puzzlePiece">8</div>
+            <div class="puzzlePiece" style="visibility:hidden;"></div>
+            <div class="differ"></div>
+        </div>
+        <div class="controls">
+
+            <button id="toggle" onclick="showNumbers()">Hide numbers</button>
+            <button id ="solve" onclick="solve(this)">Solve</button>
+        </div>
+
+        <div class="info">
+            <h1 style="color: rgba(0,0,0,0.7);">Instructions</h1>
+            <ul>
+                <li>Use arrow keys or A,W,S,D keys to move the tiles</li>
+                <br>
+                <li>Arrange tiles so that they match the image to win the game </li>
+            </ul>
+
+            <div class="score">
+                <!-- <b>Score:-</b> <span id="score"> 100</span> -->
+                <br>
+                <b>Total moves:-</b> <span id="totalMoves">0</span>
+                <br>
+                <button onclick="newGame();">New Game</button>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+<script>
+    // presents the present positions of puzzle pieces
+    // example :- piecesPositions[0] represent the position of 1st tile in container which is 1
+    // piecesPositions[1] represents the position of 2nd tile in container which is 2
+    //     
+    // rearrange values in this array to change the initial positions of tiles
+    let grid = new Grid();
+    let solutionVisualization;
+    grid.scramble();
+    let piecesPositions = grid.getPositions(); //[1, 2, 3, 4, 5, 6, 7, 8, 9];
+    // this piece is transparent
+    // ignore this
+    let blankPieceNum = 8;
+    // reference to span that displays total moves
+    let totalMoves = document.querySelector('#totalMoves');
+    // listener for keyboard events
+    window.addEventListener('keypress', (event) => {
+        // console.log(event.key);
+        if (event.key === 't' || event.key === 'T') {
+            showNumbers();
+        } else {
+            if (grid.move(event.key)) {
+                increaseTotalMoves();
+                piecesPositions = grid.getPositions();
+                setPositions();
+                if (grid.checkWin()) {
+                    alert("Winner Winner Chicken ....... (You know next word)\ntotalmoves:- " + totalMoves.innerHTML +
+                        "\nStarting new game");
+                    newGame();
+                }
+            };
+        }
+    });
+    // this sets the positions of the tiles in the Game as given in the piecesPositions array
+    function setPositions() {
+        let puzzlePieces = document.querySelectorAll('.puzzlePiece');
+        for (let i = 0; i < puzzlePieces.length; i++) {
+            let ycord = piecesPositions[i]
+            let xTransPerc = ((piecesPositions[i] - 1) % 3) * 100;
+            let yTransPerc = Math.floor((piecesPositions[i] - 1) / 3) * 100;
+            puzzlePieces[i].style.transform = 'translate(' + xTransPerc + '% ,' + yTransPerc + '% )';
+        }
+    }
+    // give positions to the tiles according to array piecesPositions
+    setPositions();
+    // tile number visible/invisible  flag
+    // 1 if visible
+    // 0 if hidden
+    let numbersVisible = 1;
+    // toggles whether the tile number is visible or not
+    function showNumbers() {
+        let element = document.querySelector('#toggle');
+        let puzzlePiece = document.querySelectorAll('.puzzlePiece');
+        for (let i = 0; i < puzzlePiece.length; i++) {
+            puzzlePiece[i].style.color = (numbersVisible == 1) ? "transparent" : "white";
+        };
+        numbersVisible = (numbersVisible == 0) ? 1 : 0;
+        element.innerHTML = (numbersVisible == 1) ? "Hide numbers" : "Show numbers";
+    }
+    // jo karna ko karlo
+    function solve(button) {
+        enableSolvebtn(false);
+        if(grid.checkWin()){
+            return ;
+        }
+        let grid1 = new Grid(grid, undefined);
+        let goalGrid;
+        let set = [];
+        const prior = (new PriorityQueue());
+        prior.put(grid1);
+        set[grid1.getIndex()] = 1;
+        let solutionFound = false;
+        while (!solutionFound) {
+            grid1 = (prior.pop());
+            if (!grid1) {
+                break;
+            }
+            let possibleMoves = grid1.getAvailableMoves();
+            for (let i = 0; i < possibleMoves.length; i++) {
+                let g = new Grid(grid1, possibleMoves[i]);
+                if (set[g.getIndex()] != 1) {
+                    set[g.getIndex()] = 1;
+                    prior.put(g);
+                    if (g.checkWin()) {
+                        solutionFound = true;
+                        goalGrid = g;
+                    }
+                }
+            }
+        }
+        console.log('Solution found');
+        let correctMoves = [];
+        let index = 0;
+        let parentGrid;
+        while (true) {
+            let move = goalGrid.createWithMove;
+            if (move) {
+                correctMoves[index] = move;
+                goalGrid = goalGrid.parent;
+                if (goalGrid) parentGrid = goalGrid;
+                index++;
+            } else {
+                break;
+            }
+        }
+        correctMoves.reverse();
+        console.log("Move sequence ", correctMoves);
+        index = 0;
+        solutionVisualization = setInterval(() => {
+            if (!correctMoves[index]) {
+                clearInterval(solutionVisualization);
+                console.log('clearing....', index);
+            } else {
+                grid.move(correctMoves[index])
+                increaseTotalMoves();
+                piecesPositions = grid.getPositions();
+                index++;
+                setPositions();
+                if (grid.checkWin()) {
+                    // if (confirm("Winner Winner Chicken ....... (You know next word)\ntotalmoves:- " +
+                    //         totalMoves.innerHTML +
+                    //         "\nStarting new game")) {
+                    //     newGame();
+                    // };
+                    enableSolvebtn(true);
+                }
+            }
+        }, 400);
+    }
+    function enableSolvebtn(bool){
+        document.querySelector('#solve').disabled = !bool;
+    }
+    function changeImage(imgElement) {
+        let src = imgElement.attributes.src.value;
+        console.log(src);
+        let puzzleContainer = document.querySelector('.puzzleContainer');
+        puzzleContainer.style.backgroundImage = 'url(' + src + ')';
+        document.querySelectorAll('.puzzlePiece').forEach((img) => {
+            img.style.backgroundImage = 'url(' + src + ')';
+        });
+    }
+    //increase total Moves count
+    function increaseTotalMoves(resetGame = undefined) {
+        totalMoves.innerHTML = (parseInt(totalMoves.innerHTML)) + 1;
+        if (resetGame != undefined) totalMoves.innerHTML = 0;
+    }
+    // Reset game
+    // rearrange tile positions 
+    // Reset totalMoves to Zero
+    function newGame() {
+        if (solutionVisualization) {
+            clearInterval(solutionVisualization);
+            solutionVisualization = undefined;
+        }
+        enableSolvebtn(true);
+        grid.scramble();
+        piecesPositions = grid.getPositions();
+        setPositions();
+        increaseTotalMoves(resetGame = true);
+    }
+    // checks whether tiles are in correct sequence or not 
+    function checkWin() {
+        let i = 1;
+        let wonStatus = true;
+        piecesPositions.forEach((element) => {
+            if (i != element) {
+                wonStatus = false;
+            };
+            i++;
+        });
+        return wonStatus;
+    }
+</script>
+
+
+</html>
