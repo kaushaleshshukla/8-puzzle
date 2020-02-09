@@ -56,11 +56,11 @@ class Grid {
         let wonStatus = true;
         this.piecesPositions.forEach((element) => {
             if (i != element) {
-                wonStatus = false;
+                return false;
             }
             i++;
         });
-        return wonStatus;
+        return true;
     }
 
     move(key) {
