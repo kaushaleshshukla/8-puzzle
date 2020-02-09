@@ -53,7 +53,6 @@ class Grid {
 
     checkWin() {
         let i = 1;
-        let wonStatus = true;
         this.piecesPositions.forEach((element) => {
             if (i != element) {
                 return false;
@@ -137,14 +136,14 @@ class Grid {
             let is = (this.piecesPositions[i] - 1)%3;
             let diff = shoudlBe - is;
             
-            dist = dist + (( diff < 0 ) ? -diff : diff);
+            dist = dist + Math.abs(diff);
             
             shoudlBe = Math.floor(i/3);
             let x  = (this.piecesPositions[i] - 1)/3;
             is = Math.floor(x);
             diff = shoudlBe - is;
 
-            dist = dist + (( diff < 0 ) ? -diff : diff);
+            dist = dist + Math.abs(diff);
         }
         this.mDist = dist;
     }
